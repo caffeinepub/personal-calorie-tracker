@@ -1,0 +1,168 @@
+{
+  "kind": "build_request",
+  "title": "Personal Calorie Tracker with Food Photo Upload & Step Tracking",
+  "projectName": "CalorieLens",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Create a backend data model and actor to store user food log entries per day. Each entry must include: date (Text), food name (Text), calorie estimate (Nat), and an image reference (Text). Provide functions to add a food entry, retrieve all entries for a given date, and retrieve a list of all distinct logged dates.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "uploading pictures of food it can tell how much calories intake will be there by that food and add it to my daily consumption",
+          "keeps a record of my daily intake"
+        ]
+      },
+      "acceptanceCriteria": [
+        "addFoodEntry(date, foodName, calories, imageRef) stores a new entry",
+        "getFoodEntriesByDate(date) returns all entries for that date",
+        "getAllLoggedDates() returns a deduplicated list of dates that have entries",
+        "Data persists across canister upgrades via stable storage"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create a backend data model and functions to store daily step count records. Each record includes: date (Text) and step count (Nat). Provide functions to set/update steps for a date and retrieve steps for a given date. Calculate calories burned from steps using the standard approximation of 0.04 kcal per step.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "enable feature of recording foot steps which tells how much calories it reduces"
+        ]
+      },
+      "acceptanceCriteria": [
+        "setStepsForDate(date, steps) stores or updates the step count for that date",
+        "getStepsForDate(date) returns the step count and computed calories burned",
+        "Calories burned calculation uses 0.04 kcal/step",
+        "Step data persists across canister upgrades"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Create a backend function to return a full daily summary for a given date, including: total calories consumed (sum of all food entries), total steps taken, total calories burned from steps, and net calories (consumed minus burned).",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "tell me how much calories i took in a day",
+          "keeps a record of my daily intake"
+        ]
+      },
+      "acceptanceCriteria": [
+        "getDailySummary(date) returns totalCaloriesIn, totalSteps, caloriesBurned, and netCalories",
+        "Correctly sums all food entries for the date",
+        "Net calories = totalCaloriesIn - caloriesBurned"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Build a Food Upload screen where the user can upload or select a photo of food. The app must read the image, display a preview, and perform a client-side heuristic analysis of the image filename and basic color/size signals to produce a plausible calorie estimate range. Present the estimated calories and a suggested food name to the user, who can confirm or manually adjust both values before saving the entry to the backend for the current date.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "uploading pictures of food it can tell how much calories intake will be there by that food and add it to my daily consumption"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can pick or drag-and-drop a food photo",
+        "A food name and calorie estimate are displayed after upload",
+        "User can edit the food name and calorie value before confirming",
+        "Confirming calls addFoodEntry on the backend and shows a success message",
+        "Image preview is shown throughout the flow"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Build a Daily Dashboard screen (defaulting to today's date) showing: a date selector to switch days, a list of all food entries logged for that day (food name, calories, thumbnail), total calories consumed, a step count input where the user can log their steps for the day, total calories burned from steps, and a net calorie balance indicator (calories in minus calories out). Display a motivational message indicating whether the user is in a calorie deficit or surplus.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "tell me how much calories i took in a day",
+          "enable feature of recording foot steps which tells how much calories it reduces",
+          "keep record of calories intake so that i can work on reducing my fat in body"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Dashboard loads today's data by default",
+        "Date picker allows viewing any previously logged day",
+        "Food entries list shows food name and calories for the selected date",
+        "Step count input saves to the backend on submit",
+        "Total calories in, calories burned, and net calories are displayed clearly",
+        "A calorie deficit is highlighted positively (green); surplus is highlighted as a warning (amber/red)"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Build a History Log screen that lists all dates that have logged food entries or step data. For each date, show the total calories consumed, total calories burned, and net calories. Tapping or clicking a date navigates to that date's Daily Dashboard. Display a summary trend (e.g., average daily net calories across all logged days).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "keeps a record of my daily intake",
+          "keep record of calories intake so that i can work on reducing my fat in body"
+        ]
+      },
+      "acceptanceCriteria": [
+        "History screen lists all days that have at least one entry",
+        "Each row shows date, calories in, calories burned, net calories",
+        "Clicking a date row navigates to the Dashboard for that date",
+        "Average daily net calorie figure is shown at the top of the history list"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Design and apply a cohesive visual theme across the entire app. Use a fresh, health-and-wellness-inspired aesthetic: clean white and soft green tones with warm orange accents, rounded cards, clear typography with strong hierarchy, and an airy layout. The design should feel motivating and approachable for a daily fat-loss tracking use case.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "keep record of calories intake so that i can work on reducing my fat in body"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Consistent color palette (soft greens, white backgrounds, warm orange CTAs) applied throughout",
+        "All screens use rounded card components and clear section headings",
+        "Navigation between Food Upload, Dashboard, and History is intuitive and always accessible",
+        "App feels visually cohesive and polished on both mobile and desktop viewport widths"
+      ]
+    }
+  ],
+  "constraints": [
+    "No external AI/ML API integrations — calorie estimation must be fully client-side or rule-based",
+    "All data must be stored in the Motoko backend canister using stable storage",
+    "Do not edit any files listed under frontend.immutablePaths",
+    "Single Motoko actor for all backend logic"
+  ],
+  "nonGoals": [
+    "User authentication or multi-user support",
+    "GPS or real-time step counting via device sensors",
+    "Integration with wearables or external fitness APIs",
+    "Nutritional breakdown beyond calorie counts (macros, vitamins, etc.)",
+    "Social features or sharing"
+  ],
+  "imageRequirements": {
+    "required": [
+      "App logo mark: a stylized plate with a leaf and small flame icon, fresh and minimal (logo-mark.dim_256x256.png)",
+      "Onboarding hero illustration: a top-down flat-lay of colorful healthy foods on a white surface with warm tones (hero-food.dim_1200x400.png)"
+    ],
+    "edits": []
+  }
+}

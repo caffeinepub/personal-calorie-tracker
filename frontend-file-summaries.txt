@@ -1,0 +1,14 @@
+{
+  "frontend/src/App.tsx": "Main app entry with TanStack Router setup, defining routes for dashboard, upload, and history pages, with a root redirect from / to /dashboard.",
+  "frontend/src/components/Layout.tsx": "Persistent app shell with sticky header (logo + desktop nav), mobile bottom navigation bar, and footer with caffeine.ai attribution.",
+  "frontend/src/components/StatCard.tsx": "Reusable stat display card showing a label, large numeric value with unit, optional icon, and color variants (success/warning/danger/info/default).",
+  "frontend/src/components/FoodEntryCard.tsx": "Displays a single food log entry with thumbnail image (via ExternalBlob.getDirectURL()), food name, date, and calorie badge.",
+  "frontend/src/components/ImageDropzone.tsx": "Drag-and-drop image upload zone with file input fallback, drag-over visual feedback, image preview with clear button, and image-only file validation.",
+  "frontend/src/utils/calorieEstimator.ts": "Client-side heuristic calorie estimator that maps food keywords in filenames to calorie ranges and uses file size as a portion-size signal.",
+  "frontend/src/hooks/useQueries.ts": "All React Query hooks for backend interactions: food entries CRUD, daily summary, steps, available dates, and history summaries with proper cache invalidation.",
+  "frontend/src/pages/Dashboard.tsx": "Daily dashboard page showing date navigation, stat cards (calories in/burned/net/steps), step logger, food entry list, and motivational deficit/surplus messaging.",
+  "frontend/src/pages/FoodUpload.tsx": "Multi-step food logging page with image dropzone, automatic calorie estimation, editable food name/calorie fields, upload progress, and success confirmation.",
+  "frontend/src/pages/History.tsx": "History log page listing all tracked dates with per-day calorie summaries, average stats card, deficit/surplus badges, and click-to-navigate to that day's dashboard.",
+  "frontend/src/index.css": "Global styles with OKLCH health-wellness color system (forest green primary, warm orange accent, success/warning tokens), Inter + Plus Jakarta Sans fonts, and utility classes.",
+  "frontend/tailwind.config.js": "Extended Tailwind config with custom font families, success/warning color tokens, enhanced border-radius scale, and card shadow utilities."
+}

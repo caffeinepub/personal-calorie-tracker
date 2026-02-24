@@ -1,0 +1,23 @@
+{
+  "backend/main.mo": "Motoko actor defining a calorie-tracking backend with persistent food entry and step-count storage, exposing functions to add/query food entries, log steps, and compute daily calorie summaries.",
+  "feature_evidence.json": "Feature evidence report mapping three app features (food upload, daily dashboard, history log) to their implementing source files, component dependencies, and test IDs.",
+  "frontend-file-summaries.txt": "JSON document containing one-sentence descriptions of each frontend source file, serving as a quick reference for the purpose of every component, page, hook, and utility.",
+  "frontend/index.css": "Tailwind base stylesheet defining OKLCH CSS custom properties for light and dark color themes including background, foreground, primary, accent, chart, and sidebar tokens.",
+  "frontend/index.html": "Minimal HTML entry point titled 'Personal Calorie Tracker' that mounts the React app into a root div and loads the main TSX module.",
+  "frontend/src/App.tsx": "Root React component that configures TanStack Router with routes for dashboard, upload, and history pages, redirecting the index path to /dashboard.",
+  "frontend/src/components/FoodEntryCard.tsx": "Card component that displays a food log entry with a thumbnail image (falling back to an icon on error), food name, date, and a calorie badge.",
+  "frontend/src/components/ImageDropzone.tsx": "Drag-and-drop image upload component with file-input fallback, drag-over visual feedback, image preview with a clear button, and image-only file type validation.",
+  "frontend/src/components/Layout.tsx": "App shell component providing a sticky header with logo and desktop navigation, a mobile bottom navigation bar, a main content area, and a desktop footer.",
+  "frontend/src/components/StatCard.tsx": "A reusable card component that displays a statistic with a label, value, optional unit, icon, and subtitle, supporting multiple color variants (default, success, warning, danger, info).",
+  "frontend/src/hooks/useActor.ts": "A React hook that creates and caches an ICP backend actor using TanStack Query, returning either an authenticated or anonymous actor based on the current Internet Identity, and invalidating dependent queries when the actor changes.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides an InternetIdentityProvider context and useInternetIdentity hook for managing ICP Internet Identity authentication, including login, logout, and identity state tracking via AuthClient.",
+  "frontend/src/hooks/useQueries.ts": "Defines TanStack Query hooks for fetching and mutating backend data including food entries, daily summaries, step records, available dates, and history summaries using the ICP actor.",
+  "frontend/src/index.css": "Global stylesheet that imports fonts, configures Tailwind, and defines CSS custom properties for light and dark theme color tokens (backgrounds, primary, success, warning, charts, sidebar, etc.) using OKLCH color values.",
+  "frontend/src/main.tsx": "Application entry point that renders the React app wrapped with TanStack QueryClientProvider and InternetIdentityProvider.",
+  "frontend/src/pages/Dashboard.tsx": "The main dashboard page that displays daily food entries, calorie stats, step tracking, and date navigation, allowing users to log steps and view a summary of consumed vs. burned calories for a selected date.",
+  "frontend/src/pages/FoodUpload.tsx": "Multi-step food upload page that lets users select an image, previews it, runs a client-side calorie estimate, allows editing of food name and calories, then saves the entry to the backend via a mutation hook.",
+  "frontend/src/pages/History.tsx": "History page that fetches all logged dates and their daily summaries, displays them in a sorted list with calories in/burned/net, shows an overall average card, and navigates to the dashboard for a selected date on row click.",
+  "frontend/src/utils/calorieEstimator.ts": "Client-side utility that estimates calories for an uploaded food image by matching keywords in the filename against a hardcoded food-to-calorie-range map and applying a file-size-based portion multiplier.",
+  "frontend/tailwind.config.js": "Tailwind CSS configuration defining dark mode, custom OKLCH-based color tokens, extended border radii, font families, box shadows, and accordion keyframe animations, with typography, container-queries, and animate plugins.",
+  "project_state.json": "Project state manifest describing the calorie tracker app's purpose, versioning, image requirements, and the list of already-implemented features with their requirement IDs."
+}
