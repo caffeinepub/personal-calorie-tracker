@@ -1,14 +1,17 @@
 import { FoodEntry } from '@/backend';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Flame, Utensils } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Flame, Utensils, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface FoodEntryCardProps {
   entry: FoodEntry;
+  onDelete?: (id: string, date: string) => void;
+  isDeleting?: boolean;
 }
 
-export default function FoodEntryCard({ entry }: FoodEntryCardProps) {
+export default function FoodEntryCard({ entry, onDelete, isDeleting }: FoodEntryCardProps) {
   const [imgError, setImgError] = useState(false);
   const imageUrl = entry.image.getDirectURL();
 
@@ -42,6 +45,24 @@ export default function FoodEntryCard({ entry }: FoodEntryCardProps) {
             <span className="font-bold tabular-nums">{Number(entry.calories)}</span>
             <span className="text-xs font-normal">kcal</span>
           </Badge>
+
+          {/* Delete Button */}
+          {onDelete && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="flex-shrink-0 w-8 h-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              onClick={() => onDelete(entry.id, entry.date)}
+              disabled={isDeleting}
+              aria-label="Delete food entry"
+            >
+              {isDeleting ? (
+                <span className="w-3.5 h-3.5 border-2 border-muted-foreground/30 border-t-muted-foreground rounded-full animate-spin" />
+              ) : (
+                <Trash2 className="w-3.5 h-3.5" />
+              )}
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

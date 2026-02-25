@@ -24,6 +24,10 @@ function getTodayDate(): string {
   return new Date().toISOString().split('T')[0];
 }
 
+function generateId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 type UploadStep = 'select' | 'review' | 'success';
 
 export default function FoodUpload() {
@@ -94,6 +98,7 @@ export default function FoodUpload() {
       });
 
       await addFoodEntry.mutateAsync({
+        id: generateId(),
         date: selectedDate,
         foodName: foodName.trim(),
         calories: BigInt(calorieNum),

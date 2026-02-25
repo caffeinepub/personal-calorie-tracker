@@ -20,6 +20,10 @@ export const _CaffeineStorageRefillResult = IDL.Record({
   'topped_up_amount' : IDL.Opt(IDL.Nat),
 });
 export const ExternalBlob = IDL.Vec(IDL.Nat8);
+export const Result = IDL.Variant({
+  'failure' : IDL.Text,
+  'success' : IDL.Null,
+});
 export const StepRecord = IDL.Record({ 'date' : IDL.Text, 'steps' : IDL.Nat });
 export const DailySummary = IDL.Record({
   'totalCaloriesBurned' : IDL.Nat,
@@ -28,6 +32,7 @@ export const DailySummary = IDL.Record({
   'netCalories' : IDL.Int,
 });
 export const FoodEntry = IDL.Record({
+  'id' : IDL.Text,
   'date' : IDL.Text,
   'calories' : IDL.Nat,
   'image' : ExternalBlob,
@@ -62,12 +67,14 @@ export const idlService = IDL.Service({
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   'addFoodEntry' : IDL.Func(
-      [IDL.Text, IDL.Text, IDL.Nat, ExternalBlob],
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, ExternalBlob],
       [],
       [],
     ),
+  'deleteFoodEntry' : IDL.Func([IDL.Text, IDL.Text], [Result], []),
   'getAllStepRecords' : IDL.Func([], [IDL.Vec(StepRecord)], ['query']),
   'getAvailableDates' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+  'getCalorieLimit' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
   'getDailySummary' : IDL.Func([IDL.Text], [DailySummary], ['query']),
   'getEntriesForDate' : IDL.Func([IDL.Text], [IDL.Vec(FoodEntry)], ['query']),
   'getEntriesForDateSortedByFood' : IDL.Func(
@@ -76,6 +83,8 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'getSteps' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
+  'logSteps' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+  'setCalorieLimit' : IDL.Func([IDL.Text, IDL.Nat], [], []),
 });
 
 export const idlInitArgs = [];
@@ -93,6 +102,7 @@ export const idlFactory = ({ IDL }) => {
     'topped_up_amount' : IDL.Opt(IDL.Nat),
   });
   const ExternalBlob = IDL.Vec(IDL.Nat8);
+  const Result = IDL.Variant({ 'failure' : IDL.Text, 'success' : IDL.Null });
   const StepRecord = IDL.Record({ 'date' : IDL.Text, 'steps' : IDL.Nat });
   const DailySummary = IDL.Record({
     'totalCaloriesBurned' : IDL.Nat,
@@ -101,6 +111,7 @@ export const idlFactory = ({ IDL }) => {
     'netCalories' : IDL.Int,
   });
   const FoodEntry = IDL.Record({
+    'id' : IDL.Text,
     'date' : IDL.Text,
     'calories' : IDL.Nat,
     'image' : ExternalBlob,
@@ -135,12 +146,14 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     'addFoodEntry' : IDL.Func(
-        [IDL.Text, IDL.Text, IDL.Nat, ExternalBlob],
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Nat, ExternalBlob],
         [],
         [],
       ),
+    'deleteFoodEntry' : IDL.Func([IDL.Text, IDL.Text], [Result], []),
     'getAllStepRecords' : IDL.Func([], [IDL.Vec(StepRecord)], ['query']),
     'getAvailableDates' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'getCalorieLimit' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
     'getDailySummary' : IDL.Func([IDL.Text], [DailySummary], ['query']),
     'getEntriesForDate' : IDL.Func([IDL.Text], [IDL.Vec(FoodEntry)], ['query']),
     'getEntriesForDateSortedByFood' : IDL.Func(
@@ -149,6 +162,8 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getSteps' : IDL.Func([IDL.Text], [IDL.Nat], ['query']),
+    'logSteps' : IDL.Func([IDL.Text, IDL.Nat], [], []),
+    'setCalorieLimit' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   });
 };
 

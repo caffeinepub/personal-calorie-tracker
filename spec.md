@@ -1,22 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Build CalorieLens, a personal calorie tracker app where users can upload food photos to log calorie intake, record daily steps to track calories burned, and view their daily and historical nutrition balance.
+**Goal:** Add delete functionality for food entries, a persistent per-day calorie limit with a remaining calories display and exceeded-limit warning, and a 7-day calorie consumption chart to the Calorie Tracker app.
 
 **Planned changes:**
+- Add `deleteFoodEntry(id, date)` backend function that removes a food entry from stable storage and returns a success/failure result
+- Add `setCalorieLimit(date, limit)` and `getCalorieLimit(date)` backend functions to persist a per-day calorie limit across sessions
+- Add a trash icon delete button to each food entry card on the Daily Dashboard; clicking it calls the backend, then refreshes calories consumed and net balance immediately
+- Add a calorie limit input control on the Daily Dashboard that loads the stored limit, allows editing/saving, and shows a live "calories remaining" counter
+- Show a prominent warning banner on the Daily Dashboard when calories consumed exceed the set limit; hide it when consumption drops back below the limit
+- Add a 7-day bar or line chart on the Daily Dashboard showing daily calories consumed for the past 7 days, with a horizontal reference line at the current day's calorie limit; chart updates live when entries are added or deleted
 
-### Backend (Motoko)
-- Data model for food log entries (date, food name, calorie estimate, image reference) with stable storage
-- `addFoodEntry`, `getFoodEntriesByDate`, and `getAllLoggedDates` functions
-- Data model for daily step records (date, step count) with stable storage
-- `setStepsForDate` and `getStepsForDate` functions (calories burned = steps × 0.04 kcal)
-- `getDailySummary(date)` returning total calories in, total steps, calories burned, and net calories
-
-### Frontend
-- **Food Upload screen:** drag-and-drop or file picker for food photos, image preview, client-side heuristic calorie estimation (based on filename and image signals), editable food name and calorie fields, confirm to save entry
-- **Daily Dashboard screen:** defaults to today, date picker to switch days, food entries list with thumbnails, step count input, totals for calories in/burned/net, motivational deficit/surplus indicator (green for deficit, amber/red for surplus)
-- **History Log screen:** list of all logged dates with calories in, burned, and net per row; average daily net calories summary at top; clicking a row navigates to that date's dashboard
-- **Visual theme:** white and soft green palette, warm orange accents, rounded cards, strong typography hierarchy, responsive layout for mobile and desktop
-- Navigation accessible from all screens between Food Upload, Dashboard, and History
-
-**User-visible outcome:** Users can photograph food to log calorie intake, manually record daily steps, and view a clear daily and historical breakdown of calories consumed vs. burned, supporting a fat-loss tracking routine.
+**User-visible outcome:** Users can delete individual food entries from their daily log, set and persist a daily calorie limit, see how many calories remain for the day, receive a visual warning when they exceed their limit, and view a 7-day calorie consumption chart with their limit as a reference line.

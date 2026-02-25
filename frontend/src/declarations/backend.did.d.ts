@@ -18,11 +18,14 @@ export interface DailySummary {
 }
 export type ExternalBlob = Uint8Array;
 export interface FoodEntry {
+  'id' : string,
   'date' : string,
   'calories' : bigint,
   'image' : ExternalBlob,
   'foodName' : string,
 }
+export type Result = { 'failure' : string } |
+  { 'success' : null };
 export interface StepRecord { 'date' : string, 'steps' : bigint }
 export interface _CaffeineStorageCreateCertificateResult {
   'method' : string,
@@ -52,15 +55,19 @@ export interface _SERVICE {
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   'addFoodEntry' : ActorMethod<
-    [string, string, bigint, ExternalBlob],
+    [string, string, string, bigint, ExternalBlob],
     undefined
   >,
+  'deleteFoodEntry' : ActorMethod<[string, string], Result>,
   'getAllStepRecords' : ActorMethod<[], Array<StepRecord>>,
   'getAvailableDates' : ActorMethod<[], Array<string>>,
+  'getCalorieLimit' : ActorMethod<[string], bigint>,
   'getDailySummary' : ActorMethod<[string], DailySummary>,
   'getEntriesForDate' : ActorMethod<[string], Array<FoodEntry>>,
   'getEntriesForDateSortedByFood' : ActorMethod<[string], Array<FoodEntry>>,
   'getSteps' : ActorMethod<[string], bigint>,
+  'logSteps' : ActorMethod<[string, bigint], undefined>,
+  'setCalorieLimit' : ActorMethod<[string, bigint], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

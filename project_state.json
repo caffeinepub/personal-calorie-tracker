@@ -1,11 +1,10 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
-  "summary": "Personal calorie tracker app where users can upload food photos to get AI-based calorie estimates, log daily food intake, track step count and calories burned, and view a full daily record of calories in vs. calories out. Aimed at helping users reduce body fat.",
+  "projectStateVersion": 7,
+  "summary": "Personal calorie tracker app where users can upload food photos to get AI-based calorie estimates, log daily food intake, track step count and calories burned, and view a full daily record of calories in vs. calories out. Features include: delete food entries with immediate calorie recalculation, a 7-day calorie consumption progress chart with calorie limit reference line, a persistent per-day calorie limit setting with calories-remaining display, and an in-app visual warning when the calorie limit is exceeded. Aimed at helping users reduce body fat.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- App logo mark: a stylized plate with a leaf and small flame icon, fresh and minimal (logo-mark.dim_256x256.png)\n- Onboarding hero illustration: a top-down flat-lay of colorful healthy foods on a white surface with warm tones (hero-food.dim_1200x400.png)",
   "existing_features": [
     {
       "id": "feature-build-a-food-upload-screen-where-the-user-can-upload-or-select-a-photo-of-food-the-app-must-read-the-image-display-a-preview-and-perform-a-client-side-heuristic-analysis-of-the-image-filename-and-basic-color-size-signals-to-produce-a-plausible-calorie-estimate-range-present-the-estimated-calories-and-a-suggested-food-name-to-the-user-who-can-confirm-or-manually-adjust-both-values-before-saving-the-entry-to-the-backend-for-the-current-date",
@@ -36,6 +35,38 @@
       "title": "Design and apply a cohesive visual theme across the entire app. Use a fresh, health-and-wellness-inspired aesthetic: clean white and soft green tones with warm orange accents, rounded cards, clear typography with strong hierarchy, and an airy layout. The design should feel motivating and approachable for a daily fat-loss tracking use case.",
       "reqIds": [
         "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-step-count-input-on-the-daily-dashboard-so-that-when-the-user-enters-a-step-count-and-confirms-the-value-is-correctly-persisted-to-the-backend-via-the-logsteps-or-equivalent-mutation-after-a-successful-save-the-displayed-calories-burned-and-net-calorie-balance-must-immediately-reflect-the-updated-step-count-without-requiring-a-page-reload",
+      "title": "Fix the step count input on the Daily Dashboard so that when the user enters a step count and confirms, the value is correctly persisted to the backend via the logSteps (or equivalent) mutation. After a successful save, the displayed calories burned and net calorie balance must immediately reflect the updated step count without requiring a page reload.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-daily-dashboard-add-a-delete-button-trash-icon-to-each-food-entry-card-when-clicked-call-the-deletefoodentry-backend-mutation-then-immediately-invalidate-and-refresh-the-daily-summary-so-that-total-calories-consumed-and-net-calorie-balance-update-without-a-page-reload",
+      "title": "On the Daily Dashboard, add a delete button (trash icon) to each food entry card. When clicked, call the deleteFoodEntry backend mutation, then immediately invalidate and refresh the daily summary so that total calories consumed and net calorie balance update without a page reload.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-daily-dashboard-add-a-calorie-limit-input-control-that-loads-the-current-day-s-persisted-limit-from-the-backend-via-getcalorielimit-allows-the-user-to-set-or-update-it-calling-setcalorielimit-on-save-and-displays-a-calories-remaining-counter-limit-minus-calories-consumed-when-calories-consumed-exceed-the-limit-show-a-prominent-in-app-visual-warning-banner-or-indicator-on-the-dashboard",
+      "title": "On the Daily Dashboard, add a calorie limit input control that loads the current day's persisted limit from the backend via getCalorieLimit, allows the user to set or update it (calling setCalorieLimit on save), and displays a 'calories remaining' counter (limit minus calories consumed). When calories consumed exceed the limit, show a prominent in-app visual warning banner or indicator on the dashboard.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-7-day-calorie-consumption-progress-chart-to-the-daily-dashboard-or-a-dedicated-chart-section-that-plots-daily-total-calories-consumed-for-the-past-7-days-as-a-bar-or-line-chart-with-the-current-day-s-calorie-limit-rendered-as-a-horizontal-reference-line",
+      "title": "Add a 7-day calorie consumption progress chart to the Daily Dashboard (or a dedicated chart section) that plots daily total calories consumed for the past 7 days as a bar or line chart, with the current day's calorie limit rendered as a horizontal reference line.",
+      "reqIds": [
+        "REQ-13"
       ],
       "version": 1
     }
@@ -92,6 +123,40 @@
       "summary": "Create a backend function to return a full daily summary for a given date, including: total calories consumed (sum of all food entries), total steps taken, total calories burned from steps, and net calories (consumed minus burned).",
       "reqIds": [
         "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Add delete option for each food entry in the daily log; backend deleteFoodEntry function; immediately update total calories consumed and net calorie balance after deletion",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Daily progress chart showing calorie consumption for the past 7 days with the calorie limit plotted as a reference line",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Persistent per-day calorie limit stored in the backend, with a calories-remaining display on the dashboard and an in-app visual warning banner when the limit is exceeded",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Add a deleteFoodEntry(id: Text, date: Text) update function to the backend actor that removes a food entry by its ID for the given date and returns a success/failure result.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Add a setCalorieLimit(date: Text, limit: Nat) update function and a getCalorieLimit(date: Text) query function to the backend actor so the daily calorie limit is persisted per date across sessions.",
+      "reqIds": [
+        "REQ-10"
       ],
       "status": "pending"
     }

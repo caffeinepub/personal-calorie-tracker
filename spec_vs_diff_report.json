@@ -1,100 +1,19 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-24T21:51:54.789Z",
-  "summary": "The diff implements most of the requested requirements. Backend covers food entry storage, step tracking, and daily summary. Frontend covers all three screens (Dashboard, Food Upload, History) with the health-wellness visual theme. However, several specific acceptance criteria have gaps: setStepsForDate is never exposed as a public backend method, stable storage persistence is not implemented via stable variables or upgrade hooks, the History screen only includes dates with food entries (not step-only dates), and getStepsForDate traps on missing data rather than returning a structured response.",
-  "missing_requirements": [
-    {
-      "id": "REQ-2",
-      "requirement": "setStepsForDate(date, steps) must be a public backend function to store or update step count",
-      "reason": "The backend actor in main.mo never exposes a public setStepsForDate function. The stepsMap is only read via getSteps, never written via any public method. The Dashboard.tsx frontend explicitly acknowledges this gap with a comment and calls (actor as any).setStepsForDate?.() as an optional fallback.",
-      "evidence": [
-        "backend/main.mo",
-        "frontend/src/pages/Dashboard.tsx"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "getStepsForDate(date) should return the step count and computed calories burned as a structured response",
-      "reason": "The backend getSteps function uses Runtime.trap when no steps are recorded rather than returning a structured response with both steps and calories burned. The calories burned value is never returned from this function.",
-      "evidence": [
-        "backend/main.mo",
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    },
-    {
-      "id": "REQ-1",
-      "requirement": "Data persists across canister upgrades via stable storage",
-      "reason": "The Motoko actor uses let foodEntries = List.empty<FoodEntry>() and let stepsMap = Map.empty<Text, Nat>() without stable variables or preupgrade/postupgrade hooks, meaning data will be lost on canister upgrades.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "Step data persists across canister upgrades",
-      "reason": "No stable storage mechanism is implemented for stepsMap in the Motoko actor. Same absence of stable variables and upgrade hooks as the food entries.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "History screen lists all days that have at least one food entry or step data",
-      "reason": "The History page only calls getAvailableDates() which returns only dates with food entries. Dates that have only step data with no food entries would not appear in the history list.",
-      "evidence": [
-        "frontend/src/pages/History.tsx",
-        "backend/main.mo",
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    }
-  ],
-  "hallucinated_features": [
-    {
-      "description": "getEntriesForDateSortedByFood additional backend query function",
-      "reason": "The backend exposes an additional getEntriesForDateSortedByFood function that was not requested in the build spec. The spec only asked for getFoodEntriesByDate.",
-      "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "getAllStepRecords() backend function returning all step records as an array",
-      "reason": "The backend exposes a getAllStepRecords function returning all step records, which was not specified in the requirements. The spec only required setStepsForDate and getStepsForDate.",
-      "evidence": [
-        "backend/main.mo",
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    },
-    {
-      "description": "Date selector on FoodUpload screen allowing logging to a chosen date",
-      "reason": "The FoodUpload page includes a selectedDate state for choosing which date to log food to. The spec explicitly states food upload saves to the backend for the current date with no date selection on the upload screen.",
-      "evidence": [
-        "frontend/src/pages/FoodUpload.tsx"
-      ]
-    }
-  ],
-  "confidence": 0.78,
+  "generatedAt": "2026-02-25T21:36:15.942Z",
+  "summary": "The diff implements all four requirements (REQ-9 through REQ-13) with reasonable completeness. Backend adds deleteFoodEntry, setCalorieLimit, and getCalorieLimit. Frontend adds delete buttons per entry, calorie limit editing with calories-remaining display, exceeded-limit warning banner, and a 7-day Recharts bar chart with reference line. All React Query hooks are present with proper query invalidation. No significant missing requirements or hallucinated features are detected.",
+  "missing_requirements": [],
+  "hallucinated_features": [],
+  "confidence": 0.88,
   "changed_files": [
-    "all_files_summary.json",
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/src/App.tsx",
     "frontend/src/components/FoodEntryCard.tsx",
-    "frontend/src/components/ImageDropzone.tsx",
-    "frontend/src/components/Layout.tsx",
-    "frontend/src/components/StatCard.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/index.css",
-    "frontend/src/main.tsx",
     "frontend/src/pages/Dashboard.tsx",
     "frontend/src/pages/FoodUpload.tsx",
-    "frontend/src/pages/History.tsx",
-    "frontend/src/utils/calorieEstimator.ts",
-    "frontend/tailwind.config.js",
     "project_state.json"
   ]
 }

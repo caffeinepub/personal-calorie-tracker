@@ -89,7 +89,15 @@ export class ExternalBlob {
         return this;
     }
 }
+export type Result = {
+    __kind__: "failure";
+    failure: string;
+} | {
+    __kind__: "success";
+    success: null;
+};
 export interface FoodEntry {
+    id: string;
     date: string;
     calories: bigint;
     image: ExternalBlob;
@@ -123,15 +131,19 @@ export interface backendInterface {
     _caffeineStorageCreateCertificate(blobHash: string): Promise<_CaffeineStorageCreateCertificateResult>;
     _caffeineStorageRefillCashier(refillInformation: _CaffeineStorageRefillInformation | null): Promise<_CaffeineStorageRefillResult>;
     _caffeineStorageUpdateGatewayPrincipals(): Promise<void>;
-    addFoodEntry(date: string, foodName: string, calories: bigint, image: ExternalBlob): Promise<void>;
+    addFoodEntry(id: string, date: string, foodName: string, calories: bigint, image: ExternalBlob): Promise<void>;
+    deleteFoodEntry(id: string, date: string): Promise<Result>;
     getAllStepRecords(): Promise<Array<StepRecord>>;
     getAvailableDates(): Promise<Array<string>>;
+    getCalorieLimit(date: string): Promise<bigint>;
     getDailySummary(date: string): Promise<DailySummary>;
     getEntriesForDate(date: string): Promise<Array<FoodEntry>>;
     getEntriesForDateSortedByFood(date: string): Promise<Array<FoodEntry>>;
     getSteps(date: string): Promise<bigint>;
+    logSteps(date: string, steps: bigint): Promise<void>;
+    setCalorieLimit(date: string, limit: bigint): Promise<void>;
 }
-import type { ExternalBlob as _ExternalBlob, FoodEntry as _FoodEntry, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
+import type { ExternalBlob as _ExternalBlob, FoodEntry as _FoodEntry, Result as _Result, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _caffeineStorageBlobIsLive(arg0: Uint8Array): Promise<boolean> {
@@ -218,18 +230,32 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async addFoodEntry(arg0: string, arg1: string, arg2: bigint, arg3: ExternalBlob): Promise<void> {
+    async addFoodEntry(arg0: string, arg1: string, arg2: string, arg3: bigint, arg4: ExternalBlob): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.addFoodEntry(arg0, arg1, arg2, await to_candid_ExternalBlob_n8(this._uploadFile, this._downloadFile, arg3));
+                const result = await this.actor.addFoodEntry(arg0, arg1, arg2, arg3, await to_candid_ExternalBlob_n8(this._uploadFile, this._downloadFile, arg4));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addFoodEntry(arg0, arg1, arg2, await to_candid_ExternalBlob_n8(this._uploadFile, this._downloadFile, arg3));
+            const result = await this.actor.addFoodEntry(arg0, arg1, arg2, arg3, await to_candid_ExternalBlob_n8(this._uploadFile, this._downloadFile, arg4));
             return result;
+        }
+    }
+    async deleteFoodEntry(arg0: string, arg1: string): Promise<Result> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteFoodEntry(arg0, arg1);
+                return from_candid_Result_n9(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteFoodEntry(arg0, arg1);
+            return from_candid_Result_n9(this._uploadFile, this._downloadFile, result);
         }
     }
     async getAllStepRecords(): Promise<Array<StepRecord>> {
@@ -260,6 +286,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getCalorieLimit(arg0: string): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCalorieLimit(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCalorieLimit(arg0);
+            return result;
+        }
+    }
     async getDailySummary(arg0: string): Promise<DailySummary> {
         if (this.processError) {
             try {
@@ -278,28 +318,28 @@ export class Backend implements backendInterface {
         if (this.processError) {
             try {
                 const result = await this.actor.getEntriesForDate(arg0);
-                return from_candid_vec_n9(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getEntriesForDate(arg0);
-            return from_candid_vec_n9(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
         }
     }
     async getEntriesForDateSortedByFood(arg0: string): Promise<Array<FoodEntry>> {
         if (this.processError) {
             try {
                 const result = await this.actor.getEntriesForDateSortedByFood(arg0);
-                return from_candid_vec_n9(this._uploadFile, this._downloadFile, result);
+                return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getEntriesForDateSortedByFood(arg0);
-            return from_candid_vec_n9(this._uploadFile, this._downloadFile, result);
+            return from_candid_vec_n11(this._uploadFile, this._downloadFile, result);
         }
     }
     async getSteps(arg0: string): Promise<bigint> {
@@ -316,12 +356,43 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async logSteps(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.logSteps(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.logSteps(arg0, arg1);
+            return result;
+        }
+    }
+    async setCalorieLimit(arg0: string, arg1: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.setCalorieLimit(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.setCalorieLimit(arg0, arg1);
+            return result;
+        }
+    }
 }
-async function from_candid_ExternalBlob_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ExternalBlob): Promise<ExternalBlob> {
+async function from_candid_ExternalBlob_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _ExternalBlob): Promise<ExternalBlob> {
     return await _downloadFile(value);
 }
-async function from_candid_FoodEntry_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _FoodEntry): Promise<FoodEntry> {
-    return await from_candid_record_n11(_uploadFile, _downloadFile, value);
+async function from_candid_FoodEntry_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _FoodEntry): Promise<FoodEntry> {
+    return await from_candid_record_n13(_uploadFile, _downloadFile, value);
+}
+function from_candid_Result_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Result): Result {
+    return from_candid_variant_n10(_uploadFile, _downloadFile, value);
 }
 function from_candid__CaffeineStorageRefillResult_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: __CaffeineStorageRefillResult): _CaffeineStorageRefillResult {
     return from_candid_record_n5(_uploadFile, _downloadFile, value);
@@ -332,21 +403,24 @@ function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
 function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
     return value.length === 0 ? null : value[0];
 }
-async function from_candid_record_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+async function from_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: string;
     date: string;
     calories: bigint;
     image: _ExternalBlob;
     foodName: string;
 }): Promise<{
+    id: string;
     date: string;
     calories: bigint;
     image: ExternalBlob;
     foodName: string;
 }> {
     return {
+        id: value.id,
         date: value.date,
         calories: value.calories,
-        image: await from_candid_ExternalBlob_n12(_uploadFile, _downloadFile, value.image),
+        image: await from_candid_ExternalBlob_n14(_uploadFile, _downloadFile, value.image),
         foodName: value.foodName
     };
 }
@@ -362,8 +436,27 @@ function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint
         topped_up_amount: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.topped_up_amount))
     };
 }
-async function from_candid_vec_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_FoodEntry>): Promise<Array<FoodEntry>> {
-    return await Promise.all(value.map(async (x)=>await from_candid_FoodEntry_n10(_uploadFile, _downloadFile, x)));
+function from_candid_variant_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    failure: string;
+} | {
+    success: null;
+}): {
+    __kind__: "failure";
+    failure: string;
+} | {
+    __kind__: "success";
+    success: null;
+} {
+    return "failure" in value ? {
+        __kind__: "failure",
+        failure: value.failure
+    } : "success" in value ? {
+        __kind__: "success",
+        success: value.success
+    } : value;
+}
+async function from_candid_vec_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_FoodEntry>): Promise<Array<FoodEntry>> {
+    return await Promise.all(value.map(async (x)=>await from_candid_FoodEntry_n12(_uploadFile, _downloadFile, x)));
 }
 async function to_candid_ExternalBlob_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: ExternalBlob): Promise<_ExternalBlob> {
     return await _uploadFile(value);

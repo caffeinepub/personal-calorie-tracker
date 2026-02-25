@@ -2,34 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-build-a-food-upload-screen-where-the-user-can-upload-or-select-a-photo-of-food-the-app-must-read-the-image-display-a-preview-and-perform-a-client-side-heuristic-analysis-of-the-image-filename-and-basic-color-size-signals-to-produce-a-plausible-calorie-estimate-range-present-the-estimated-calories-and-a-suggested-food-name-to-the-user-who-can-confirm-or-manually-adjust-both-values-before-saving-the-entry-to-the-backend-for-the-current-date",
-      "featureTitle": "Build a Food Upload screen where the user can upload or select a photo of food. The app must read the image, display a preview, and perform a client-side heuristic analysis of the image filename and basic color/size signals to produce a plausible calorie estimate range. Present the estimated calories and a suggested food name to the user, who can confirm or manually adjust both values before saving the entry to the backend for the current date.",
+      "featureId": "feature-on-the-daily-dashboard-add-a-delete-button-trash-icon-to-each-food-entry-card-when-clicked-call-the-deletefoodentry-backend-mutation-then-immediately-invalidate-and-refresh-the-daily-summary-so-that-total-calories-consumed-and-net-calorie-balance-update-without-a-page-reload",
+      "featureTitle": "On the Daily Dashboard, add a delete button (trash icon) to each food entry card. When clicked, call the deleteFoodEntry backend mutation, then immediately invalidate and refresh the daily summary so that total calories consumed and net calorie balance update without a page reload.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/ImageDropzone.tsx",
-        "frontend/src/pages/FoodUpload.tsx",
-        "frontend/src/utils/calorieEstimator.ts"
-      ],
-      "components": [
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-build-a-daily-dashboard-screen-defaulting-to-today-s-date-showing-a-date-selector-to-switch-days-a-list-of-all-food-entries-logged-for-that-day-food-name-calories-thumbnail-total-calories-consumed-a-step-count-input-where-the-user-can-log-their-steps-for-the-day-total-calories-burned-from-steps-and-a-net-calorie-balance-indicator-calories-in-minus-calories-out-display-a-motivational-message-indicating-whether-the-user-is-in-a-calorie-deficit-or-surplus",
-      "featureTitle": "Build a Daily Dashboard screen (defaulting to today's date) showing: a date selector to switch days, a list of all food entries logged for that day (food name, calories, thumbnail), total calories consumed, a step count input where the user can log their steps for the day, total calories burned from steps, and a net calorie balance indicator (calories in minus calories out). Display a motivational message indicating whether the user is in a calorie deficit or surplus.",
-      "files": [
-        "frontend/src/App.tsx",
         "frontend/src/components/FoodEntryCard.tsx",
-        "frontend/src/components/StatCard.tsx",
+        "frontend/src/hooks/useQueries.ts",
         "frontend/src/pages/Dashboard.tsx"
       ],
       "components": [
@@ -41,16 +18,16 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-5"
+        "REQ-11"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-build-a-history-log-screen-that-lists-all-dates-that-have-logged-food-entries-or-step-data-for-each-date-show-the-total-calories-consumed-total-calories-burned-and-net-calories-tapping-or-clicking-a-date-navigates-to-that-date-s-daily-dashboard-display-a-summary-trend-e-g-average-daily-net-calories-across-all-logged-days",
-      "featureTitle": "Build a History Log screen that lists all dates that have logged food entries or step data. For each date, show the total calories consumed, total calories burned, and net calories. Tapping or clicking a date navigates to that date's Daily Dashboard. Display a summary trend (e.g., average daily net calories across all logged days).",
+      "featureId": "feature-on-the-daily-dashboard-add-a-calorie-limit-input-control-that-loads-the-current-day-s-persisted-limit-from-the-backend-via-getcalorielimit-allows-the-user-to-set-or-update-it-calling-setcalorielimit-on-save-and-displays-a-calories-remaining-counter-limit-minus-calories-consumed-when-calories-consumed-exceed-the-limit-show-a-prominent-in-app-visual-warning-banner-or-indicator-on-the-dashboard",
+      "featureTitle": "On the Daily Dashboard, add a calorie limit input control that loads the current day's persisted limit from the backend via getCalorieLimit, allows the user to set or update it (calling setCalorieLimit on save), and displays a 'calories remaining' counter (limit minus calories consumed). When calories consumed exceed the limit, show a prominent in-app visual warning banner or indicator on the dashboard.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/History.tsx"
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/Dashboard.tsx"
       ],
       "components": [
         "blob-storage@4.0.0",
@@ -61,18 +38,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-6"
+        "REQ-12"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-design-and-apply-a-cohesive-visual-theme-across-the-entire-app-use-a-fresh-health-and-wellness-inspired-aesthetic-clean-white-and-soft-green-tones-with-warm-orange-accents-rounded-cards-clear-typography-with-strong-hierarchy-and-an-airy-layout-the-design-should-feel-motivating-and-approachable-for-a-daily-fat-loss-tracking-use-case",
-      "featureTitle": "Design and apply a cohesive visual theme across the entire app. Use a fresh, health-and-wellness-inspired aesthetic: clean white and soft green tones with warm orange accents, rounded cards, clear typography with strong hierarchy, and an airy layout. The design should feel motivating and approachable for a daily fat-loss tracking use case.",
+      "featureId": "feature-add-a-7-day-calorie-consumption-progress-chart-to-the-daily-dashboard-or-a-dedicated-chart-section-that-plots-daily-total-calories-consumed-for-the-past-7-days-as-a-bar-or-line-chart-with-the-current-day-s-calorie-limit-rendered-as-a-horizontal-reference-line",
+      "featureTitle": "Add a 7-day calorie consumption progress chart to the Daily Dashboard (or a dedicated chart section) that plots daily total calories consumed for the past 7 days as a bar or line chart, with the current day's calorie limit rendered as a horizontal reference line.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/Layout.tsx",
-        "frontend/src/index.css",
-        "frontend/tailwind.config.js"
+        "frontend/src/pages/Dashboard.tsx"
       ],
       "components": [
         "blob-storage@4.0.0",
@@ -83,7 +57,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-7"
+        "REQ-13"
       ],
       "confidence": "high"
     }
