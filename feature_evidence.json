@@ -2,49 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-on-the-daily-dashboard-add-a-delete-button-trash-icon-to-each-food-entry-card-when-clicked-call-the-deletefoodentry-backend-mutation-then-immediately-invalidate-and-refresh-the-daily-summary-so-that-total-calories-consumed-and-net-calorie-balance-update-without-a-page-reload",
-      "featureTitle": "On the Daily Dashboard, add a delete button (trash icon) to each food entry card. When clicked, call the deleteFoodEntry backend mutation, then immediately invalidate and refresh the daily summary so that total calories consumed and net calorie balance update without a page reload.",
-      "files": [
-        "frontend/src/components/FoodEntryCard.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/Dashboard.tsx"
-      ],
-      "components": [
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-11"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-on-the-daily-dashboard-add-a-calorie-limit-input-control-that-loads-the-current-day-s-persisted-limit-from-the-backend-via-getcalorielimit-allows-the-user-to-set-or-update-it-calling-setcalorielimit-on-save-and-displays-a-calories-remaining-counter-limit-minus-calories-consumed-when-calories-consumed-exceed-the-limit-show-a-prominent-in-app-visual-warning-banner-or-indicator-on-the-dashboard",
-      "featureTitle": "On the Daily Dashboard, add a calorie limit input control that loads the current day's persisted limit from the backend via getCalorieLimit, allows the user to set or update it (calling setCalorieLimit on save), and displays a 'calories remaining' counter (limit minus calories consumed). When calories consumed exceed the limit, show a prominent in-app visual warning banner or indicator on the dashboard.",
-      "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/Dashboard.tsx"
-      ],
-      "components": [
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-12"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-7-day-calorie-consumption-progress-chart-to-the-daily-dashboard-or-a-dedicated-chart-section-that-plots-daily-total-calories-consumed-for-the-past-7-days-as-a-bar-or-line-chart-with-the-current-day-s-calorie-limit-rendered-as-a-horizontal-reference-line",
-      "featureTitle": "Add a 7-day calorie consumption progress chart to the Daily Dashboard (or a dedicated chart section) that plots daily total calories consumed for the past 7 days as a bar or line chart, with the current day's calorie limit rendered as a horizontal reference line.",
+      "featureId": "feature-fix-the-daily-dashboard-date-initialization-so-that-when-the-page-loads-the-selected-date-state-is-set-to-today-s-actual-current-date-using-new-date-or-equivalent-and-the-date-selector-calendar-input-correctly-reflects-and-displays-today-s-true-date-ensure-that-navigating-to-the-dashboard-without-a-pre-selected-date-always-defaults-to-the-current-calendar-date-not-a-hardcoded-or-stale-value",
+      "featureTitle": "Fix the Daily Dashboard date initialization so that when the page loads, the selected date state is set to today's actual current date (using `new Date()` or equivalent), and the date selector/calendar input correctly reflects and displays today's true date. Ensure that navigating to the dashboard without a pre-selected date always defaults to the current calendar date, not a hardcoded or stale value.",
       "files": [
         "frontend/src/pages/Dashboard.tsx"
       ],
@@ -57,7 +16,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-13"
+        "REQ-18"
       ],
       "confidence": "high"
     }

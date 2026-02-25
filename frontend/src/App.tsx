@@ -1,9 +1,27 @@
-import { RouterProvider, createRouter, createRoute, createRootRoute, Outlet, redirect } from '@tanstack/react-router';
-import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import FoodUpload from './pages/FoodUpload';
-import History from './pages/History';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  createRouter,
+  createRoute,
+  createRootRoute,
+  RouterProvider,
+  Outlet,
+  redirect,
+} from "@tanstack/react-router";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
+import FoodUpload from "./pages/FoodUpload";
+import History from "./pages/History";
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 30_000,
+    },
+  },
+});
+
+// Root route with layout
 const rootRoute = createRootRoute({
   component: () => (
     <Layout>
@@ -12,29 +30,30 @@ const rootRoute = createRootRoute({
   ),
 });
 
+// Index redirect
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: "/",
   beforeLoad: () => {
-    throw redirect({ to: '/dashboard' });
+    throw redirect({ to: "/dashboard" });
   },
 });
 
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/dashboard',
+  path: "/dashboard",
   component: Dashboard,
 });
 
 const uploadRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/upload',
+  path: "/upload",
   component: FoodUpload,
 });
 
 const historyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/history',
+  path: "/history",
   component: History,
 });
 
@@ -47,12 +66,16 @@ const routeTree = rootRoute.addChildren([
 
 const router = createRouter({ routeTree });
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
 }
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
 }

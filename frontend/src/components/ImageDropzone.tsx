@@ -1,108 +1,100 @@
-import { useRef, useState, DragEvent, ChangeEvent } from 'react';
-import { Upload, ImageIcon, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useRef, useState, useCallback } from "react";
+import { Upload, X, ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ImageDropzoneProps {
-  onFileSelected: (file: File) => void;
-  selectedFile: File | null;
-  previewUrl: string | null;
-  onClear: () => void;
+  onImageSelected: (file: File) => void;
+  onImageCleared: () => void;
+  previewUrl?: string | null;
 }
 
-export default function ImageDropzone({ onFileSelected, selectedFile, previewUrl, onClear }: ImageDropzoneProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
+export default function ImageDropzone({
+  onImageSelected,
+  onImageCleared,
+  previewUrl,
+}: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+  const handleFile = useCallback(
+    (file: File) => {
+      if (!file.type.startsWith("image/")) return;
+      onImageSelected(file);
+    },
+    [onImageSelected]
+  );
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      setIsDragging(false);
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    },
+    [handleFile]
+  );
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+  const handleDragLeave = () => setIsDragging(false);
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      onFileSelected(file);
-    }
-  };
-
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      onFileSelected(file);
-    }
+    if (file) handleFile(file);
   };
 
-  if (previewUrl && selectedFile) {
+  if (previewUrl) {
     return (
-      <div className="relative rounded-2xl overflow-hidden border-2 border-primary/30 bg-muted">
-        <img
-          src={previewUrl}
-          alt="Food preview"
-          className="w-full h-56 object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-          <span className="text-white text-sm font-medium truncate max-w-[70%] drop-shadow">
-            {selectedFile.name}
-          </span>
-          <Button
-            variant="secondary"
-            size="icon"
-            className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-foreground"
-            onClick={onClear}
-          >
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
+      <div className="relative rounded-xl overflow-hidden border border-border">
+        <img src={previewUrl} alt="Preview" className="w-full h-56 object-cover" />
+        <Button
+          type="button"
+          variant="destructive"
+          size="icon"
+          className="absolute top-2 right-2"
+          onClick={onImageCleared}
+        >
+          <X className="w-4 h-4" />
+        </Button>
       </div>
     );
   }
 
   return (
     <div
+      onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
       onClick={() => inputRef.current?.click()}
-      className={`
-        relative flex flex-col items-center justify-center gap-4 
-        h-56 rounded-2xl border-2 border-dashed cursor-pointer
-        transition-all duration-200
-        ${isDragging
-          ? 'border-primary bg-primary/10 scale-[1.01]'
-          : 'border-border bg-muted/50 hover:border-primary/50 hover:bg-primary/5'
-        }
-      `}
+      className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed h-48 cursor-pointer transition-colors ${
+        isDragging
+          ? "border-primary bg-primary/5"
+          : "border-border hover:border-primary/50 hover:bg-muted/30"
+      }`}
     >
+      <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+        {isDragging ? (
+          <Upload className="w-6 h-6 text-primary" />
+        ) : (
+          <ImageIcon className="w-6 h-6 text-muted-foreground" />
+        )}
+      </div>
+      <div className="text-center">
+        <p className="text-sm font-medium">
+          {isDragging ? "Drop image here" : "Drag & drop or click to upload"}
+        </p>
+        <p className="text-xs text-muted-foreground mt-0.5">PNG, JPG, WEBP supported</p>
+      </div>
       <input
         ref={inputRef}
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={handleFileChange}
+        onChange={handleInputChange}
       />
-      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-colors ${isDragging ? 'bg-primary/20' : 'bg-muted'}`}>
-        {isDragging ? (
-          <ImageIcon className="w-8 h-8 text-primary" />
-        ) : (
-          <Upload className="w-8 h-8 text-muted-foreground" />
-        )}
-      </div>
-      <div className="text-center px-4">
-        <p className="font-semibold text-foreground">
-          {isDragging ? 'Drop your food photo here' : 'Upload a food photo'}
-        </p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Drag & drop or click to browse · JPG, PNG, WEBP
-        </p>
-      </div>
     </div>
   );
 }

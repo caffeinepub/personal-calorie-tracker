@@ -1,26 +1,24 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import { FoodEntry, DailySummary, StepRecord, ExternalBlob } from '@/backend';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useActor } from "./useActor";
+import { ExternalBlob } from "../backend";
 
-// ─── Food Entries ────────────────────────────────────────────────────────────
+// ── Food Entries ──────────────────────────────────────────────────────────────
 
-export function useEntriesForDate(date: string) {
+export function useGetFoodEntries(date: string) {
   const { actor, isFetching } = useActor();
-
-  return useQuery<FoodEntry[]>({
-    queryKey: ['entries', date],
+  return useQuery({
+    queryKey: ["foodEntries", date],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getEntriesForDate(date);
     },
-    enabled: !!actor && !isFetching && !!date,
+    enabled: !!actor && !isFetching,
   });
 }
 
 export function useAddFoodEntry() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({
       id,
@@ -35,14 +33,14 @@ export function useAddFoodEntry() {
       calories: bigint;
       image: ExternalBlob;
     }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      await actor.addFoodEntry(id, date, foodName, calories, image);
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.addFoodEntry(id, date, foodName, calories, image);
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['entries', variables.date] });
-      queryClient.invalidateQueries({ queryKey: ['summary', variables.date] });
-      queryClient.invalidateQueries({ queryKey: ['availableDates'] });
-      queryClient.invalidateQueries({ queryKey: ['sevenDayHistory'] });
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["foodEntries", variables.date] });
+      queryClient.invalidateQueries({ queryKey: ["dailySummary", variables.date] });
+      queryClient.invalidateQueries({ queryKey: ["availableDates"] });
+      queryClient.invalidateQueries({ queryKey: ["sevenDayHistory"] });
     },
   });
 }
@@ -50,94 +48,107 @@ export function useAddFoodEntry() {
 export function useDeleteFoodEntry() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: async ({ id, date }: { id: string; date: string }) => {
-      if (!actor) throw new Error('Actor not initialized');
+      if (!actor) throw new Error("Actor not initialized");
       const result = await actor.deleteFoodEntry(id, date);
-      if (result.__kind__ === 'failure') {
+      if (result.__kind__ === "failure") {
         throw new Error(result.failure);
       }
+      return result;
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['entries', variables.date] });
-      queryClient.invalidateQueries({ queryKey: ['summary', variables.date] });
-      queryClient.invalidateQueries({ queryKey: ['sevenDayHistory'] });
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["foodEntries", variables.date] });
+      queryClient.invalidateQueries({ queryKey: ["dailySummary", variables.date] });
+      queryClient.invalidateQueries({ queryKey: ["availableDates"] });
+      queryClient.invalidateQueries({ queryKey: ["sevenDayHistory"] });
     },
   });
 }
 
-// ─── Daily Summary ───────────────────────────────────────────────────────────
+// ── Daily Summary ─────────────────────────────────────────────────────────────
 
-export function useDailySummary(date: string) {
+export function useGetDailySummary(date: string) {
   const { actor, isFetching } = useActor();
-
-  return useQuery<DailySummary>({
-    queryKey: ['summary', date],
-    queryFn: async () => {
-      if (!actor) throw new Error('Actor not initialized');
-      return actor.getDailySummary(date);
-    },
-    enabled: !!actor && !isFetching && !!date,
-  });
-}
-
-// ─── Steps ───────────────────────────────────────────────────────────────────
-
-export function useStepsForDate(date: string) {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<bigint | null>({
-    queryKey: ['steps', date],
+  return useQuery({
+    queryKey: ["dailySummary", date],
     queryFn: async () => {
       if (!actor) return null;
+      return actor.getDailySummary(date);
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// ── Steps ─────────────────────────────────────────────────────────────────────
+
+export function useGetSteps(date: string) {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["steps", date],
+    queryFn: async () => {
+      if (!actor) return BigInt(0);
       try {
         return await actor.getSteps(date);
       } catch {
-        // No steps recorded for this date
-        return null;
+        return BigInt(0);
       }
     },
-    enabled: !!actor && !isFetching && !!date,
+    enabled: !!actor && !isFetching,
   });
 }
 
 export function useLogSteps() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: async ({ date, steps }: { date: string; steps: number }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      await actor.logSteps(date, BigInt(steps));
+    mutationFn: async ({ date, steps }: { date: string; steps: bigint }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.logSteps(date, steps);
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['steps', variables.date] });
-      queryClient.invalidateQueries({ queryKey: ['summary', variables.date] });
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["steps", variables.date] });
+      queryClient.invalidateQueries({ queryKey: ["dailySummary", variables.date] });
+      queryClient.invalidateQueries({ queryKey: ["sevenDayHistory"] });
     },
   });
 }
 
-export function useAllStepRecords() {
-  const { actor, isFetching } = useActor();
+// ── Calorie Limit ─────────────────────────────────────────────────────────────
 
-  return useQuery<StepRecord[]>({
-    queryKey: ['allStepRecords'],
+export function useGetCalorieLimit(date: string) {
+  const { actor, isFetching } = useActor();
+  return useQuery({
+    queryKey: ["calorieLimit", date],
     queryFn: async () => {
-      if (!actor) return [];
-      return actor.getAllStepRecords();
+      if (!actor) return BigInt(2000);
+      return actor.getCalorieLimit(date);
     },
     enabled: !!actor && !isFetching,
   });
 }
 
-// ─── Available Dates ─────────────────────────────────────────────────────────
+export function useSetCalorieLimit() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ date, limit }: { date: string; limit: bigint }) => {
+      if (!actor) throw new Error("Actor not initialized");
+      return actor.setCalorieLimit(date, limit);
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["calorieLimit", variables.date] });
+      queryClient.invalidateQueries({ queryKey: ["sevenDayHistory"] });
+    },
+  });
+}
 
-export function useAvailableDates() {
+// ── Available Dates ───────────────────────────────────────────────────────────
+
+export function useGetAvailableDates() {
   const { actor, isFetching } = useActor();
-
-  return useQuery<string[]>({
-    queryKey: ['availableDates'],
+  return useQuery({
+    queryKey: ["availableDates"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getAvailableDates();
@@ -146,90 +157,36 @@ export function useAvailableDates() {
   });
 }
 
-// ─── History Summaries ───────────────────────────────────────────────────────
+// ── Seven Day History ─────────────────────────────────────────────────────────
 
-export function useHistorySummaries(dates: string[]) {
+export function useSevenDayHistory(referenceDate: string) {
   const { actor, isFetching } = useActor();
-
-  return useQuery<Array<{ date: string; summary: DailySummary }>>({
-    queryKey: ['historySummaries', dates],
+  return useQuery({
+    queryKey: ["sevenDayHistory", referenceDate],
     queryFn: async () => {
-      if (!actor || dates.length === 0) return [];
-      const results = await Promise.all(
-        dates.map(async (date) => {
-          const summary = await actor.getDailySummary(date);
-          return { date, summary };
-        })
-      );
-      return results.sort((a, b) => b.date.localeCompare(a.date));
-    },
-    enabled: !!actor && !isFetching && dates.length > 0,
-  });
-}
-
-// ─── Seven Day History ───────────────────────────────────────────────────────
-
-function getLastSevenDays(): string[] {
-  const days: string[] = [];
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    days.push(d.toISOString().split('T')[0]);
-  }
-  return days;
-}
-
-export function useSevenDayHistory() {
-  const { actor, isFetching } = useActor();
-  const dates = getLastSevenDays();
-
-  return useQuery<Array<{ date: string; calories: number }>>({
-    queryKey: ['sevenDayHistory'],
-    queryFn: async () => {
-      if (!actor) return dates.map((date) => ({ date, calories: 0 }));
-      const results = await Promise.all(
-        dates.map(async (date) => {
-          try {
-            const summary = await actor.getDailySummary(date);
-            return { date, calories: Number(summary.totalCaloriesConsumed) };
-          } catch {
-            return { date, calories: 0 };
-          }
-        })
-      );
-      return results;
+      if (!actor) return [];
+      const days: { date: string; calories: number; limit: number }[] = [];
+      const ref = new Date(referenceDate);
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(ref);
+        d.setDate(ref.getDate() - i);
+        const dateStr = d.toISOString().split("T")[0];
+        try {
+          const [summary, limit] = await Promise.all([
+            actor.getDailySummary(dateStr),
+            actor.getCalorieLimit(dateStr),
+          ]);
+          days.push({
+            date: dateStr,
+            calories: Number(summary.totalCaloriesConsumed),
+            limit: Number(limit),
+          });
+        } catch {
+          days.push({ date: dateStr, calories: 0, limit: 2000 });
+        }
+      }
+      return days;
     },
     enabled: !!actor && !isFetching,
-  });
-}
-
-// ─── Calorie Limit ───────────────────────────────────────────────────────────
-
-export function useCalorieLimit(date: string) {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<number>({
-    queryKey: ['calorieLimit', date],
-    queryFn: async () => {
-      if (!actor) return 2000;
-      const limit = await actor.getCalorieLimit(date);
-      return Number(limit);
-    },
-    enabled: !!actor && !isFetching && !!date,
-  });
-}
-
-export function useSetCalorieLimit() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async ({ date, limit }: { date: string; limit: number }) => {
-      if (!actor) throw new Error('Actor not initialized');
-      await actor.setCalorieLimit(date, BigInt(limit));
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['calorieLimit', variables.date] });
-    },
   });
 }

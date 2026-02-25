@@ -1,158 +1,93 @@
-interface CalorieEstimate {
-  estimatedCalories: number;
-  suggestedFoodName: string;
-  calorieRange: [number, number];
-}
-
-// Food keyword database with calorie ranges [min, max]
-const FOOD_CALORIE_MAP: Record<string, [number, number, string]> = {
-  // Fast food
-  pizza: [250, 350, 'Pizza Slice'],
-  burger: [450, 700, 'Burger'],
-  hamburger: [450, 700, 'Hamburger'],
-  hotdog: [280, 380, 'Hot Dog'],
-  fries: [300, 450, 'French Fries'],
-  sandwich: [300, 500, 'Sandwich'],
-  wrap: [280, 450, 'Wrap'],
-  taco: [200, 350, 'Taco'],
-  burrito: [400, 650, 'Burrito'],
-  // Healthy
-  salad: [80, 200, 'Salad'],
-  caesar: [150, 300, 'Caesar Salad'],
-  smoothie: [150, 350, 'Smoothie'],
-  bowl: [350, 600, 'Bowl'],
-  // Proteins
-  chicken: [200, 350, 'Chicken'],
-  steak: [350, 600, 'Steak'],
-  fish: [150, 300, 'Fish'],
-  salmon: [200, 350, 'Salmon'],
-  tuna: [150, 250, 'Tuna'],
-  egg: [70, 150, 'Eggs'],
-  eggs: [140, 250, 'Eggs'],
-  // Carbs
-  pasta: [300, 500, 'Pasta'],
-  rice: [200, 350, 'Rice'],
-  bread: [150, 250, 'Bread'],
-  noodle: [250, 400, 'Noodles'],
-  noodles: [250, 400, 'Noodles'],
-  sushi: [200, 400, 'Sushi'],
-  ramen: [400, 600, 'Ramen'],
-  // Snacks & Desserts
-  cake: [300, 500, 'Cake'],
-  cookie: [150, 250, 'Cookie'],
-  donut: [250, 400, 'Donut'],
-  ice: [200, 350, 'Ice Cream'],
-  chocolate: [200, 350, 'Chocolate'],
-  chips: [150, 300, 'Chips'],
-  // Fruits & Veggies
-  apple: [70, 100, 'Apple'],
-  banana: [90, 120, 'Banana'],
-  orange: [60, 90, 'Orange'],
-  avocado: [150, 250, 'Avocado'],
-  broccoli: [30, 60, 'Broccoli'],
-  // Drinks
-  coffee: [5, 150, 'Coffee'],
-  juice: [100, 200, 'Juice'],
-  milk: [100, 200, 'Milk'],
-  // Breakfast
-  pancake: [200, 400, 'Pancakes'],
-  pancakes: [200, 400, 'Pancakes'],
-  waffle: [250, 450, 'Waffles'],
-  oatmeal: [150, 300, 'Oatmeal'],
-  cereal: [150, 300, 'Cereal'],
-  // Indian/Asian
-  curry: [300, 500, 'Curry'],
-  biryani: [400, 600, 'Biryani'],
-  dal: [150, 300, 'Dal'],
-  roti: [100, 150, 'Roti'],
-  naan: [150, 250, 'Naan'],
-  dosa: [150, 250, 'Dosa'],
-  idli: [100, 150, 'Idli'],
-  samosa: [150, 250, 'Samosa'],
-  // Soups
-  soup: [100, 250, 'Soup'],
-  stew: [200, 400, 'Stew'],
+const FOOD_CALORIE_MAP: Record<string, [number, number]> = {
+  salad: [50, 150],
+  pizza: [250, 400],
+  burger: [400, 700],
+  sandwich: [200, 450],
+  pasta: [300, 600],
+  rice: [200, 400],
+  chicken: [150, 350],
+  steak: [300, 600],
+  fish: [100, 300],
+  sushi: [150, 350],
+  soup: [80, 250],
+  bread: [100, 300],
+  cake: [300, 600],
+  cookie: [150, 400],
+  fruit: [50, 150],
+  apple: [70, 100],
+  banana: [80, 120],
+  orange: [60, 90],
+  yogurt: [80, 200],
+  cheese: [100, 300],
+  egg: [70, 150],
+  oatmeal: [150, 300],
+  smoothie: [150, 400],
+  coffee: [5, 100],
+  juice: [80, 200],
+  soda: [100, 200],
+  beer: [100, 200],
+  wine: [100, 200],
+  chocolate: [200, 500],
+  ice_cream: [200, 500],
+  fries: [300, 600],
+  chips: [150, 400],
+  nuts: [150, 300],
+  avocado: [150, 300],
+  broccoli: [30, 80],
+  carrot: [30, 80],
+  potato: [100, 300],
+  taco: [200, 400],
+  burrito: [400, 800],
+  wrap: [250, 500],
+  noodles: [200, 500],
+  curry: [250, 600],
+  stir_fry: [200, 500],
 };
 
-function cleanFilename(filename: string): string {
-  return filename
-    .replace(/\.[^/.]+$/, '') // remove extension
-    .replace(/[-_]/g, ' ')    // replace dashes/underscores with spaces
-    .replace(/\d+/g, '')      // remove numbers
-    .trim()
-    .toLowerCase();
-}
+/**
+ * Estimates calories from a filename and file size.
+ * Uses keyword matching on the filename and file size as a portion signal.
+ */
+export function estimateCaloriesFromFile(file: File): number {
+  const name = file.name.toLowerCase().replace(/[_\-\.]/g, " ");
 
-function fileSizeCalorieMultiplier(fileSize: number): number {
-  // Larger files might indicate larger portions
-  // Base: ~500KB = 1.0x, scale up/down
-  const baseSizeKB = 500;
-  const fileSizeKB = fileSize / 1024;
-  const ratio = fileSizeKB / baseSizeKB;
-  // Clamp between 0.7 and 1.5
-  return Math.min(1.5, Math.max(0.7, ratio));
-}
-
-export function estimateCalories(file: File): CalorieEstimate {
-  const cleanedName = cleanFilename(file.name);
-  const words = cleanedName.split(/\s+/);
-
-  // Try to find a matching food keyword
-  let bestMatch: [number, number, string] | null = null;
-  let matchedKeyword = '';
-
-  for (const word of words) {
-    if (FOOD_CALORIE_MAP[word]) {
-      bestMatch = FOOD_CALORIE_MAP[word];
-      matchedKeyword = word;
+  let matchedRange: [number, number] | null = null;
+  for (const [keyword, range] of Object.entries(FOOD_CALORIE_MAP)) {
+    if (name.includes(keyword.replace("_", " "))) {
+      matchedRange = range;
       break;
     }
   }
 
-  // Also check if any keyword is contained in the full name
-  if (!bestMatch) {
-    for (const [keyword, data] of Object.entries(FOOD_CALORIE_MAP)) {
-      if (cleanedName.includes(keyword)) {
-        bestMatch = data;
-        matchedKeyword = keyword;
-        break;
-      }
-    }
+  if (!matchedRange) {
+    // Default range for unknown foods
+    matchedRange = [200, 600];
   }
 
-  const multiplier = fileSizeCalorieMultiplier(file.size);
+  const [min, max] = matchedRange;
+  // Use file size as a portion signal (larger file = larger portion)
+  const sizeFactor = Math.min(file.size / (1024 * 1024), 1); // 0–1 based on 0–1MB
+  const estimated = Math.round(min + (max - min) * (0.3 + sizeFactor * 0.7));
 
-  if (bestMatch) {
-    const [min, max, foodName] = bestMatch;
-    const midpoint = Math.round(((min + max) / 2) * multiplier);
-    const adjustedMin = Math.round(min * multiplier);
-    const adjustedMax = Math.round(max * multiplier);
+  return estimated;
+}
 
-    // Build a nice food name from the filename
-    const fileBasedName = cleanedName
-      .split(' ')
-      .filter(w => w.length > 1)
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ');
+/**
+ * Generates a food name guess from a filename.
+ */
+export function guessFoodNameFromFile(file: File): string {
+  const name = file.name
+    .replace(/\.[^.]+$/, "") // remove extension
+    .replace(/[_\-]/g, " ")
+    .replace(/\d+/g, "")
+    .trim();
 
-    return {
-      estimatedCalories: midpoint,
-      suggestedFoodName: fileBasedName || foodName,
-      calorieRange: [adjustedMin, adjustedMax],
-    };
-  }
+  if (!name) return "Food Item";
 
-  // Default estimate for unknown foods
-  const defaultCalories = Math.round(300 * multiplier);
-  const fileBasedName = cleanedName
-    .split(' ')
-    .filter(w => w.length > 1)
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ') || 'Food Item';
-
-  return {
-    estimatedCalories: defaultCalories,
-    suggestedFoodName: fileBasedName,
-    calorieRange: [Math.round(200 * multiplier), Math.round(400 * multiplier)],
-  };
+  // Capitalize first letter of each word
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 }

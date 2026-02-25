@@ -1,53 +1,18 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-25T21:36:15.945Z",
+  "generatedAt": "2026-02-25T22:44:01.461Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 3,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-10",
-        "summary": "Add a setCalorieLimit(date: Text, limit: Nat) update function and a getCalorieLimit(date: Text) query function to the backend actor so the daily calorie limit is persisted per date across sessions.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-11",
-        "summary": "On the Daily Dashboard, add a delete button (trash icon) to each food entry card. When clicked, call the deleteFoodEntry backend mutation, then immediately invalidate and refresh the daily summary so that total calories consumed and net calorie balance update without a page reload.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/FoodEntryCard.tsx",
-          "frontend/src/pages/Dashboard.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/components/FoodEntryCard.tsx",
-          "frontend/src/pages/Dashboard.tsx"
-        ]
-      },
-      {
-        "id": "REQ-12",
-        "summary": "On the Daily Dashboard, add a calorie limit input control that loads the current day's persisted limit from the backend via getCalorieLimit, allows the user to set or update it (calling setCalorieLimit on save), and displays a 'calories remaining' counter (limit minus calories consumed). When calories consumed exceed the limit, show a prominent in-app visual warning banner or indicator on the dashboard.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/Dashboard.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/Dashboard.tsx"
-        ]
-      },
-      {
-        "id": "REQ-13",
-        "summary": "Add a 7-day calorie consumption progress chart to the Daily Dashboard (or a dedicated chart section) that plots daily total calories consumed for the past 7 days as a bar or line chart, with the current day's calorie limit rendered as a horizontal reference line.",
+        "id": "REQ-18",
+        "summary": "Fix the Daily Dashboard date initialization so that when the page loads, the selected date state is set to today's actual current date (using `new Date()` or equivalent), and the date selector/calendar input correctly reflects and displays today's true date. Ensure that navigating to the dashboard without a pre-selected date always defaults to the current calendar date, not a hardcoded or stale value.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/pages/Dashboard.tsx"
@@ -55,33 +20,15 @@
         "matchedFiles": [
           "frontend/src/pages/Dashboard.tsx"
         ]
-      },
-      {
-        "id": "REQ-9",
-        "summary": "Add a deleteFoodEntry(id: Text, date: Text) update function to the backend actor that removes a food entry by its ID for the given date and returns a success/failure result.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/FoodEntryCard.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/Dashboard.tsx",
-    "frontend/src/pages/FoodUpload.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

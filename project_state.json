@@ -1,10 +1,15 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "Personal calorie tracker app where users can upload food photos to get AI-based calorie estimates, log daily food intake, track step count and calories burned, and view a full daily record of calories in vs. calories out. Features include: delete food entries with immediate calorie recalculation, a 7-day calorie consumption progress chart with calorie limit reference line, a persistent per-day calorie limit setting with calories-remaining display, and an in-app visual warning when the calorie limit is exceeded. Aimed at helping users reduce body fat.",
-  "architectural_notes": [],
-  "known_issues": [],
-  "isFixRequest": false,
+  "projectStateVersion": 13,
+  "summary": "Personal calorie tracker app where users can upload food photos to get AI-based calorie estimates (via Open Food Facts API, free, no API key required), log daily food intake, track step count and calories burned, and view a full daily record of calories in vs. calories out. Features include: delete food entries with immediate calorie recalculation, a 7-day calorie consumption progress chart with calorie limit reference line, a persistent per-day calorie limit setting with calories-remaining display, and an in-app visual warning when the calorie limit is exceeded. Aimed at helping users reduce body fat.",
+  "architectural_notes": [
+    "Food calorie estimation uses the Open Food Facts REST API (free, no API key required) queried by food name derived from the uploaded image filename/description."
+  ],
+  "known_issues": [
+    "Deployment error encountered; reviewing full codebase for Motoko/React issues (type mismatches, missing exports, import errors, build configuration problems)",
+    "Daily Dashboard date selector shows incorrect date instead of defaulting to today's actual date"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-build-a-food-upload-screen-where-the-user-can-upload-or-select-a-photo-of-food-the-app-must-read-the-image-display-a-preview-and-perform-a-client-side-heuristic-analysis-of-the-image-filename-and-basic-color-size-signals-to-produce-a-plausible-calorie-estimate-range-present-the-estimated-calories-and-a-suggested-food-name-to-the-user-who-can-confirm-or-manually-adjust-both-values-before-saving-the-entry-to-the-backend-for-the-current-date",
@@ -67,6 +72,38 @@
       "title": "Add a 7-day calorie consumption progress chart to the Daily Dashboard (or a dedicated chart section) that plots daily total calories consumed for the past 7 days as a bar or line chart, with the current day's calorie limit rendered as a horizontal reference line.",
       "reqIds": [
         "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-food-upload-screen-after-the-user-selects-or-drops-a-food-image-extract-the-food-name-from-the-image-filename-strip-extension-replace-hyphens-underscores-with-spaces-title-case-and-query-the-open-food-facts-rest-api-https-world-openfoodfacts-org-cgi-search-pl-with-that-term-to-retrieve-real-nutritional-data-parse-the-response-to-extract-the-calorie-value-energy-kcal-100g-or-nutriments-energy-kcal-from-the-best-matching-product-use-this-api-derived-calorie-value-and-product-name-to-pre-populate-the-food-name-and-calorie-estimate-fields-replacing-the-existing-client-side-heuristic-estimate-if-the-api-returns-no-usable-result-or-the-request-fails-fall-back-silently-to-the-existing-heuristic-estimate-from-calorieestimator-ts-display-a-loading-indicator-while-the-api-request-is-in-flight-the-user-must-still-be-able-to-review-and-manually-adjust-both-the-food-name-and-calorie-value-before-confirming-and-saving-the-entry-to-the-backend",
+      "title": "On the Food Upload screen, after the user selects or drops a food image, extract the food name from the image filename (strip extension, replace hyphens/underscores with spaces, title-case) and query the Open Food Facts REST API (https://world.openfoodfacts.org/cgi/search.pl) with that term to retrieve real nutritional data. Parse the response to extract the calorie value (energy-kcal_100g or nutriments.energy-kcal) from the best-matching product. Use this API-derived calorie value and product name to pre-populate the food name and calorie estimate fields, replacing the existing client-side heuristic estimate. If the API returns no usable result or the request fails, fall back silently to the existing heuristic estimate from calorieEstimator.ts. Display a loading indicator while the API request is in flight. The user must still be able to review and manually adjust both the food name and calorie value before confirming and saving the entry to the backend.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-audit-all-frontend-typescript-react-files-for-build-errors-including-missing-or-incorrect-imports-type-errors-in-actor-call-return-types-especially-motoko-variant-option-types-being-destructured-incorrectly-missing-module-exports-and-misconfigured-build-or-tailwind-paths-fix-all-errors-so-the-frontend-builds-and-serves-successfully",
+      "title": "Audit all frontend TypeScript/React files for build errors including: missing or incorrect imports, type errors in actor call return types (especially Motoko variant/option types being destructured incorrectly), missing module exports, and misconfigured build or Tailwind paths. Fix all errors so the frontend builds and serves successfully.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-dfx-json-package-json-and-any-vite-build-configuration-files-are-correctly-set-up-so-that-the-frontend-can-reach-the-deployed-backend-canister-correct-canister-ids-correct-environment-variable-references-correct-network-configuration-fix-any-misconfiguration-that-would-cause-the-frontend-to-fail-to-connect-to-the-backend-at-runtime",
+      "title": "Verify that the dfx.json, package.json, and any Vite/build configuration files are correctly set up so that the frontend can reach the deployed backend canister (correct canister IDs, correct environment variable references, correct network configuration). Fix any misconfiguration that would cause the frontend to fail to connect to the backend at runtime.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-daily-dashboard-date-initialization-so-that-when-the-page-loads-the-selected-date-state-is-set-to-today-s-actual-current-date-using-new-date-or-equivalent-and-the-date-selector-calendar-input-correctly-reflects-and-displays-today-s-true-date-ensure-that-navigating-to-the-dashboard-without-a-pre-selected-date-always-defaults-to-the-current-calendar-date-not-a-hardcoded-or-stale-value",
+      "title": "Fix the Daily Dashboard date initialization so that when the page loads, the selected date state is set to today's actual current date (using `new Date()` or equivalent), and the date selector/calendar input correctly reflects and displays today's true date. Ensure that navigating to the dashboard without a pre-selected date always defaults to the current calendar date, not a hardcoded or stale value.",
+      "reqIds": [
+        "REQ-18"
       ],
       "version": 1
     }
@@ -158,6 +195,26 @@
       "reqIds": [
         "REQ-10"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Integrate Open Food Facts API (free, no API key) into the food upload screen to replace the heuristic calorie estimate with real database-backed nutritional data based on the detected food name from the uploaded image; user can still review and adjust before confirming.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Audit the Motoko backend (backend/main.mo and backend/migration.mo) for compilation errors including: type mismatches, undefined identifiers, incorrect function signatures, missing or incorrect imports, and any incompatible use of List/Map/Blob APIs. Fix all errors so the backend compiles and deploys successfully.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Fix the Daily Dashboard date selector so it correctly defaults to today's actual date on load and the calendar/date picker reflects the true current date.",
+      "reqIds": [],
       "status": "pending"
     }
   ],

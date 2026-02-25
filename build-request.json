@@ -1,122 +1,40 @@
 {
   "kind": "build_request",
-  "title": "Delete food entries, 7-day progress chart, calorie limit setting, and exceeded limit alert",
-  "projectName": "Calorie Tracker",
+  "title": "Fix Daily Dashboard date selector to default to today's actual date",
+  "projectName": "CalorieTracker",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-9",
-      "text": "Add a deleteFoodEntry(id: Text, date: Text) update function to the backend actor that removes a food entry by its ID for the given date and returns a success/failure result.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-6",
-          "msg-8"
-        ],
-        "quotes": [
-          "Delete food entries — Add a delete button to each food item in the daily log, with the backend deleteFoodEntry function and immediate recalculation of calories consumed and net balance"
-        ]
-      },
-      "acceptanceCriteria": [
-        "deleteFoodEntry removes the matching entry from stable storage",
-        "The daily summary (calories consumed, net calories) reflects the deletion when queried immediately after",
-        "Calling deleteFoodEntry with a non-existent ID returns a graceful error result rather than trapping"
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Add a setCalorieLimit(date: Text, limit: Nat) update function and a getCalorieLimit(date: Text) query function to the backend actor so the daily calorie limit is persisted per date across sessions.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-6",
-          "msg-8"
-        ],
-        "quotes": [
-          "Calorie limit setting — A persistent, per-day limit stored in the backend so it carries across sessions"
-        ]
-      },
-      "acceptanceCriteria": [
-        "setCalorieLimit stores the limit for the given date in stable storage",
-        "getCalorieLimit returns the previously stored limit for that date, or a sensible default (e.g., 2000) if none has been set",
-        "The stored limit survives canister upgrades"
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "text": "On the Daily Dashboard, add a delete button (trash icon) to each food entry card. When clicked, call the deleteFoodEntry backend mutation, then immediately invalidate and refresh the daily summary so that total calories consumed and net calorie balance update without a page reload.",
+      "id": "REQ-18",
+      "text": "Fix the Daily Dashboard date initialization so that when the page loads, the selected date state is set to today's actual current date (using `new Date()` or equivalent), and the date selector/calendar input correctly reflects and displays today's true date. Ensure that navigating to the dashboard without a pre-selected date always defaults to the current calendar date, not a hardcoded or stale value.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6",
-          "msg-8"
+          "msg-4",
+          "msg-5"
         ],
         "quotes": [
-          "Delete button on each food item in the daily log, with backend deleteFoodEntry function and immediate recalculation of calories consumed and net balance"
+          "Please also look at the calendar to change date, make that correct not showing true date which is Today date.",
+          "Yes fix it"
         ]
       },
       "acceptanceCriteria": [
-        "Each food entry in the daily log displays a visible delete/trash icon button",
-        "Clicking the delete button removes the entry from the list immediately (optimistic or via query invalidation)",
-        "Total calories consumed and net calorie balance update to reflect the deletion without requiring a page reload",
-        "The delete button shows a loading/disabled state while the mutation is in flight"
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "text": "On the Daily Dashboard, add a calorie limit input control that loads the current day's persisted limit from the backend via getCalorieLimit, allows the user to set or update it (calling setCalorieLimit on save), and displays a 'calories remaining' counter (limit minus calories consumed). When calories consumed exceed the limit, show a prominent in-app visual warning banner or indicator on the dashboard.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-6",
-          "msg-8"
-        ],
-        "quotes": [
-          "Calorie limit setting — Persistent per-day limit stored in the backend, with a 'calories remaining' display on the dashboard",
-          "Exceeded limit alert — In-app visual warning banner when consumed calories exceed the set limit"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A calorie limit input/edit control is visible on the Daily Dashboard, pre-populated with the stored limit for the selected date",
-        "Saving a new limit calls setCalorieLimit and immediately refreshes the display",
-        "A 'calories remaining' value (limit minus consumed) is shown and updates live as entries are added or deleted",
-        "When calories consumed exceed the set limit, a clearly visible warning banner or highlighted indicator appears on the dashboard",
-        "The warning disappears when net consumption drops back below the limit"
-      ]
-    },
-    {
-      "id": "REQ-13",
-      "text": "Add a 7-day calorie consumption progress chart to the Daily Dashboard (or a dedicated chart section) that plots daily total calories consumed for the past 7 days as a bar or line chart, with the current day's calorie limit rendered as a horizontal reference line.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-6",
-          "msg-8"
-        ],
-        "quotes": [
-          "Daily progress chart — Bar/line chart showing calorie consumption for the past 7 days, with the calorie limit plotted as a reference line"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A chart is displayed showing calorie consumption for the 7 most recent logged days (or the last 7 calendar days)",
-        "Each bar/point accurately reflects the total calories consumed for that date from the backend",
-        "A horizontal reference line is drawn at the current day's calorie limit value",
-        "The chart updates when food entries are added or deleted without requiring a page reload",
-        "Days with no logged data are shown as zero or clearly distinguished"
+        "On initial load of the Daily Dashboard, the date selector displays today's actual current date.",
+        "The date state is initialized using the real current date (e.g., `new Date()` at component mount), not a hardcoded or previously stored stale date.",
+        "The calendar/date picker input value reflects today's date in the correct format (YYYY-MM-DD or locale equivalent).",
+        "If the user navigates away and returns to the Dashboard without a specific date parameter, today's date is shown again.",
+        "Switching dates via the date selector still works correctly after the fix."
       ]
     }
   ],
   "constraints": [
-    "Do not modify files listed in frontend.immutablePaths",
-    "All backend logic must remain in the single actor in backend/main.mo",
-    "Use React Query for all data fetching and mutations; invalidate relevant queries after mutations",
-    "Charts must be implemented using a library compatible with React (e.g., Recharts) — no external API calls"
+    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui.",
+    "Do not alter backend logic or data models."
   ],
   "nonGoals": [
-    "Push/browser notifications for exceeded calorie limit",
-    "Global (non-per-day) calorie limit settings",
-    "Editing food entry details (only deletion is in scope)",
-    "Changes to the Food Upload or History screens"
+    "Changing the overall design or layout of the Daily Dashboard.",
+    "Adding new date-related features beyond fixing the default date initialization.",
+    "Modifying the History page or Food Upload page."
   ],
   "imageRequirements": {
     "required": [],

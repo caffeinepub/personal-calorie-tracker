@@ -1,73 +1,23 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Delete food entries, 7-day progress chart, calorie limit setting, and exceeded limit alert",
+  "title": "Fix Daily Dashboard date selector to default to today's actual date",
   "requirements": [
     {
-      "id": "REQ-11",
-      "summary": "Add delete button to each food entry card on the Daily Dashboard with immediate summary refresh",
+      "id": "REQ-18",
+      "summary": "Fix the Daily Dashboard date initialization so that when the page loads, the selected date state is set to today's actual current date and the date selector correctly reflects and displays today's true date",
       "acceptanceCriteria": [
-        "Each food entry in the daily log displays a visible delete/trash icon button",
-        "Clicking the delete button removes the entry from the list immediately (optimistic or via query invalidation)",
-        "Total calories consumed and net calorie balance update to reflect the deletion without requiring a page reload",
-        "The delete button shows a loading/disabled state while the mutation is in flight"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a useDeleteFoodEntry mutation hook that calls backend.deleteFoodEntry(id, date) and invalidates dailySummary and foodEntries queries for the given date on success"
-        },
-        {
-          "path": "frontend/src/components/FoodEntryCard.tsx",
-          "operation": "modify",
-          "description": "Add a delete button (Trash icon from lucide-react) to the card that accepts an onDelete callback prop. Show a loading/disabled state on the button while deletion is pending"
-        },
-        {
-          "path": "frontend/src/pages/Dashboard.tsx",
-          "operation": "modify",
-          "description": "Wire the useDeleteFoodEntry mutation to each FoodEntryCard by passing an onDelete handler that calls the mutation with the entry's id and date"
-        }
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "summary": "Add calorie limit input control with calories remaining display and exceeded limit warning banner on the Daily Dashboard",
-      "acceptanceCriteria": [
-        "A calorie limit input/edit control is visible on the Daily Dashboard, pre-populated with the stored limit for the selected date",
-        "Saving a new limit calls setCalorieLimit and immediately refreshes the display",
-        "A 'calories remaining' value (limit minus consumed) is shown and updates live as entries are added or deleted",
-        "When calories consumed exceed the set limit, a clearly visible warning banner or highlighted indicator appears on the dashboard",
-        "The warning disappears when net consumption drops back below the limit"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a useCalorieLimit query hook that calls backend.getCalorieLimit(date) and returns the limit as a number. Add a useSetCalorieLimit mutation hook that calls backend.setCalorieLimit(date, limit) and invalidates the calorieLimit query for that date on success"
-        },
-        {
-          "path": "frontend/src/pages/Dashboard.tsx",
-          "operation": "modify",
-          "description": "Add a calorie limit section above or near the daily summary that displays an editable input field for the limit (loaded via useCalorieLimit), a save button calling useSetCalorieLimit, and a 'calories remaining' display (limit minus totalCaloriesConsumed). When totalCaloriesConsumed exceeds the limit, render a prominent Alert or banner component (using shadcn/ui Alert with destructive variant) warning the user"
-        }
-      ]
-    },
-    {
-      "id": "REQ-13",
-      "summary": "Add a 7-day calorie consumption progress chart to the Daily Dashboard showing daily totals with calorie limit reference line",
-      "acceptanceCriteria": [
-        "A chart is displayed showing calorie consumption for the 7 most recent logged days (or the last 7 calendar days)",
-        "Each bar/point accurately reflects the total calories consumed for that date from the backend",
-        "A horizontal reference line is drawn at the current day's calorie limit value",
-        "The chart updates when food entries are added or deleted without requiring a page reload",
-        "Days with no logged data are shown as zero or clearly distinguished"
+        "On initial load of the Daily Dashboard, the date selector displays today's actual current date.",
+        "The date state is initialized using the real current date (e.g., `new Date()` at component mount), not a hardcoded or previously stored stale date.",
+        "The calendar/date picker input value reflects today's date in the correct format (YYYY-MM-DD or locale equivalent).",
+        "If the user navigates away and returns to the Dashboard without a specific date parameter, today's date is shown again.",
+        "Switching dates via the date selector still works correctly after the fix."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/Dashboard.tsx",
           "operation": "modify",
-          "description": "Add a chart section that fetches daily summaries for the last 7 calendar days (using useSevenDayHistory hook or multiple useDailySummary calls). Render a bar or line chart using Recharts (BarChart or LineChart) showing totalCaloriesConsumed for each day. Include a ReferenceLine component at the current day's calorie limit (from useCalorieLimit). Ensure the chart re-renders when queries are invalidated"
+          "description": "Update the date state initialization to use `new Date()` to get today's actual current date instead of any hardcoded or stale value. Ensure the initial state correctly formats today's date as YYYY-MM-DD for the date input. Verify that the date input element's value prop is properly bound to the formatted current date string on component mount."
         }
       ]
     }

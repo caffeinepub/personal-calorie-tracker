@@ -8,9 +8,9 @@ import Order "mo:core/Order";
 import Iter "mo:core/Iter";
 import Int "mo:core/Int";
 import Runtime "mo:core/Runtime";
-import Migration "migration";
 
-(with migration = Migration.run)
+
+
 actor {
   include MixinStorage();
 
@@ -171,3 +171,4 @@ actor {
     };
   };
 };
+
